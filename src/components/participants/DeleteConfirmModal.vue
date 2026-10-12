@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { Participant } from '@/types/participant'
+import type { User } from '@/types/user'
 import AppModal from '@/components/base/AppModal.vue'
 import AppButton from '@/components/base/AppButton.vue'
 
 interface Props {
   isOpen: boolean
-  participant: Participant | null
+  user: User | null
 }
 
 defineProps<Props>()
@@ -18,9 +18,9 @@ const emit = defineEmits<{
 
 <template>
   <AppModal :is-open="isOpen" title="Підтвердження видалення" @close="emit('close')">
-    <p v-if="participant" class="confirmation-text">
-      Ви дійсно бажаєте видалити учасника
-      <strong>"{{ participant.name }}"</strong>, <strong>"{{ participant.email }}"</strong>?
+    <p v-if="user" class="confirmation-text">
+      Ви дійсно бажаєте видалити користувача
+      <strong>"{{ user.firstName }} {{ user.lastName }}"</strong> ({{ user.email }})?
     </p>
 
     <template #footer>

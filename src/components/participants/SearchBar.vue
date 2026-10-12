@@ -1,20 +1,35 @@
 <script setup lang="ts">
 import { ref, watch, onUnmounted } from 'vue'
 
+interface Props {
+  modelValue: string
+}
+
+const props = defineProps<Props>()
+
 const emit = defineEmits<{
-  (e: 'filter-by-name', query: string): void
+  (e: 'update:modelValue', value: string): void
+  (e: 'search'): void
 }>()
 
-const searchQuery = ref('')
+const localQuery = ref(props.modelValue)
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
-watch(searchQuery, (newVal) => {
+watch(
+  () => props.modelValue,
+  (newVal) => {
+    localQuery.value = newVal
+  },
+)
+
+watch(localQuery, (newVal) => {
   if (debounceTimer) {
     clearTimeout(debounceTimer)
   }
   debounceTimer = setTimeout(() => {
-    emit('filter-by-name', newVal.trim())
-  }, 300)
+    emit('update:modelValue', newVal)
+    emit('search')
+  }, 350)
 })
 
 onUnmounted(() => {
@@ -27,10 +42,10 @@ onUnmounted(() => {
 <template>
   <div class="search-bar-wrapper">
     <input
-      v-model="searchQuery"
+      v-model="localQuery"
       type="text"
       class="form-control search-input"
-      placeholder="Search participants by name..."
+      placeholder="Пошук користувачів за ім'ям..."
     />
   </div>
 </template>
