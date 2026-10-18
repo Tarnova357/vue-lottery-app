@@ -1,18 +1,32 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import DefaultLayout from '@/layouts/DefaultLayout.vue'
-import AuthLayout from '@/layouts/AuthLayout.vue'
+import { onMounted } from 'vue'
+import Toast from 'primevue/toast'
+import { AppHeader } from '@/widgets/app-header'
+import { AppConfirmDialog } from '@/shared/ui'
+import { useThemeStore } from '@/features/theme-toggle'
 
-const route = useRoute()
+const themeStore = useThemeStore()
 
-const layoutComponent = computed(() => {
-  return route.meta.layout === 'AuthLayout' ? AuthLayout : DefaultLayout
+onMounted(() => {
+  themeStore.applyTheme()
 })
 </script>
 
 <template>
-  <component :is="layoutComponent">
-    <RouterView />
-  </component>
+  <div class="app-layout">
+    <Toast position="top-right" />
+    <AppConfirmDialog />
+    <AppHeader />
+    <main class="main-content">
+      <RouterView />
+    </main>
+  </div>
 </template>
+
+<style scoped lang="scss">
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+</style>
