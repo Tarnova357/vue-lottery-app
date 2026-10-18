@@ -3,7 +3,7 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useToast } from 'primevue/usetoast'
-import { useUsersStore } from '@/entities/user'
+import { type CreateUserDto, useUsersStore } from '@/entities/user'
 import type { UpdateUserDto } from '@/entities/user'
 import { UserForm } from '@/features/user-form'
 
@@ -17,7 +17,7 @@ onMounted(() => {
   usersStore.fetchUserById(Number(props.id))
 })
 
-async function onUpdate(data: UpdateUserDto): Promise<void> {
+async function onUpdate(data: CreateUserDto | UpdateUserDto): Promise<void> {
   await usersStore.updateUser(Number(props.id), data)
   toast.add({ severity: 'success', summary: 'Успіх', detail: 'Дані оновлено', life: 3000 })
   router.push(`/users/${props.id}`)

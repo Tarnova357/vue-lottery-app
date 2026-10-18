@@ -39,10 +39,28 @@ const schema = yup.object({
   phone: yup.string().required("Обов'язкове поле"),
 })
 
-const { handleSubmit, resetForm } = useForm({
+interface FormValues {
+  firstName: string
+  lastName: string
+  email: string
+  username: string
+  password?: string
+  age: number
+  gender: 'male' | 'female' | 'other'
+  phone: string
+}
+
+const { handleSubmit, resetForm } = useForm<FormValues>({
   validationSchema: schema,
   initialValues: {
+    firstName: '',
+    lastName: '',
+    email: '',
+    username: '',
+    password: '',
+    age: 18,
     gender: 'male',
+    phone: '',
   },
 })
 

@@ -4,7 +4,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useToast } from 'primevue/usetoast'
 import Dialog from 'primevue/dialog'
-import { useUsersStore } from '@/entities/user'
+import { type UpdateUserDto, useUsersStore } from '@/entities/user'
 import type { CreateUserDto } from '@/entities/user'
 import { UsersTable } from '@/widgets/users-table'
 import { UserForm } from '@/features/user-form'
@@ -48,8 +48,8 @@ function onPageChange(newPage: number): void {
   }
 }
 
-async function onCreateUser(dto: CreateUserDto): Promise<void> {
-  await usersStore.createUser(dto)
+async function onCreateUser(dto: CreateUserDto | UpdateUserDto): Promise<void> {
+  await usersStore.createUser(dto as CreateUserDto)
   isCreateOpen.value = false
   toast.add({ severity: 'success', summary: 'Успіх', detail: 'Користувача створено', life: 3000 })
 }
