@@ -35,4 +35,15 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    chunkSizeWarningLimit: 700,
+    rollupOptions: {
+      output: {
+        chunkFileNames: (chunkInfo) => {
+          const name = chunkInfo.name.replace(/^_+/, '')
+          return `assets/${name}-[hash].js`
+        },
+      },
+    },
+  },
 })
