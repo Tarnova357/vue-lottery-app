@@ -1,48 +1,45 @@
-# vue-lottery-app
+## Архітектура Feature-Sliced Design (FSD)
 
-This template should help get you started developing with Vue 3 in Vite.
+### Граф залежностей між шарами
 
-## Recommended IDE Setup
+Згідно з правилами FSD, імпорти дозволені виключно зверху вниз:
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+```mermaid
+graph TD
+    App[app] --> Pages[pages]
+    App --> Widgets[widgets]
+    App --> Features[features]
+    App --> Entities[entities]
+    App --> Shared[shared]
 
-## Recommended Browser Setup
+    Pages --> Widgets
+    Pages --> Features
+    Pages --> Entities
+    Pages --> Shared
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+    Widgets --> Features
+    Widgets --> Entities
+    Widgets --> Shared
 
-## Type Support for `.vue` Imports in TS
+    Features --> Entities
+    Features --> Shared
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+    Entities --> Shared
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
+    Shared --> Shared
 ```
 
-### Compile and Hot-Reload for Development
+### Принципи ізоляції:
+- **Public API:** кожен слайс (`entities/user`, `widgets/app-header` тощо) експортує назовні сутності виключно через свій кореневий `index.ts`. Глибокі імпорти (наприклад, з внутрішніх папок `ui` чи `model`) заборонені.
+- **Заборона перехресних зв'язків:** модулі на одному рівні (наприклад, `features/auth` та `features/user-form`) не мають прямого доступу один до одного; взаємодія між ними оркеструється на рівні `widgets` або `pages`.
 
-```sh
-npm run dev
-```
+---
 
-### Type-Check, Compile and Minify for Production
+## Порівняння підходів збереження стану (State Persistence)
 
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+| Критерій | Ручне збереження (`localStorage.setItem`) | Плагін `pinia-plugin-persistedstate` |
+| :--- | :--- | :--- |
+| **Реалізація** | Імперативна: виклики `setItem`/`getItem` у кожному екшені | Декларативна: додавання властивості `{ persist: true }` у визначенні стору |
+| **Кількість коду** | Багато шаблонного коду (boilerplate) | Мінімальна (1 рядок конфігурації) |
+| **Контроль стану** | Повний контроль: можна фільтрувати окремі поля вручну | Зберігає стан автоматично; вибіркові поля потребують налаштування `paths` |
+| **Синхронізація** | Ризик розсинхронізації, якщо пропустити виклик при зміні рефу | Автоматична підписка на будь-які реактивні мутації стору |
